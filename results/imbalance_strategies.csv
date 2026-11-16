@@ -1,0 +1,7 @@
+model,strategy,precision,recall,f1,roc_auc
+Logistic Regression,none,0.666,0.535,0.592,0.846
+Logistic Regression,class_weight,0.516,0.793,0.625,0.845
+Logistic Regression,smote,0.524,0.781,0.627,0.841
+XGBoost,none,0.659,0.522,0.581,0.842
+XGBoost,class_weight,0.532,0.757,0.625,0.843
+XGBoost,smote,0.609,0.611,0.61,0.84
