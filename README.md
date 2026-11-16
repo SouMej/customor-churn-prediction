@@ -224,7 +224,7 @@ SHAP assigns each feature a contribution to each individual prediction (in log-o
 <table>
 <tr>
 <td align="center" width="50%"><b>High risk (predicted probability 0.94)</b><br><img src="results/15_shap_waterfall_high_risk.png" alt="Waterfall, high-risk customer"></td>
-<td align="center" width="50%"><b>Low risk (predicted probability 0.02)</b><br><img src="results/16_shap_waterfall_low_risk.png" alt="Waterfall, low-risk customer"></td>
+<td align="center" width="50%"><b>Low risk (predicted probability 0.02)</b><br><img src="results/15_shap_waterfall_low_risk.png" alt="Waterfall, low-risk customer"></td>
 </tr>
 </table>
 
