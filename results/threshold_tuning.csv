@@ -1,0 +1,9 @@
+model,threshold,value,precision,recall,f1
+Logistic Regression,default (0.5),0.5,0.506,0.789,0.617
+Logistic Regression,tuned,0.593,0.553,0.717,0.624
+Decision Tree,default (0.5),0.5,0.528,0.743,0.617
+Decision Tree,tuned,0.586,0.538,0.741,0.623
+Random Forest,default (0.5),0.5,0.539,0.789,0.641
+Random Forest,tuned,0.574,0.563,0.727,0.635
+XGBoost,default (0.5),0.5,0.526,0.789,0.631
+XGBoost,tuned,0.528,0.533,0.765,0.628

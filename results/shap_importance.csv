@@ -1,0 +1,37 @@
+feature,mean_abs_shap
+cat__Contract_Month-to-month,0.6152149
+num__tenure,0.34722492
+bin__no_protection,0.28144753
+bin__monthly_fiber,0.24123557
+cat__PaymentMethod_Electronic check,0.14596634
+num__MonthlyCharges,0.1455873
+cat__Contract_Two year,0.1446734
+num__avg_monthly_spend,0.12429624
+cat__PaperlessBilling_Yes,0.09903986
+num__TotalCharges,0.08492764
+cat__StreamingMovies_Yes,0.06277074
+num__charge_gap,0.058772746
+cat__Contract_One year,0.052550927
+cat__InternetService_Fiber optic,0.042017102
+cat__MultipleLines_Yes,0.03582615
+cat__InternetService_No,0.031485714
+cat__StreamingTV_Yes,0.02865958
+cat__Dependents_Yes,0.028564924
+cat__OnlineBackup_Yes,0.026070684
+cat__PhoneService_Yes,0.021137804
+bin__SeniorCitizen,0.021027552
+cat__tenure_group_0-12,0.014599487
+cat__OnlineSecurity_Yes,0.013884406
+num__n_addons,0.009293494
+bin__is_autopay,0.008992303
+cat__PaymentMethod_Mailed check,0.007654908
+cat__gender_Male,0.007198047
+cat__InternetService_DSL,0.0065107746
+cat__TechSupport_Yes,0.0054998305
+cat__PaymentMethod_Bank transfer (automatic),0.004496171
+cat__PaymentMethod_Credit card (automatic),0.0044321553
+cat__tenure_group_49-72,0.0032393937
+cat__tenure_group_25-48,0.0018421441
+cat__DeviceProtection_Yes,0.001690521
+cat__tenure_group_13-24,0.0012905017
+cat__Partner_Yes,0.0012674782
