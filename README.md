@@ -203,34 +203,45 @@ SHAP assigns each feature a contribution to each individual prediction (in log-o
 </tr>
 </table>
 
-**Main drivers of churn**
+**Main drivers of churn** (mean absolute SHAP value in brackets)
 
-1. `TODO` Feature 1, with direction and a plain-language reading
-2. `TODO` Feature 2
-3. `TODO` Feature 3
-4. `TODO` Feature 4
-5. `TODO` Feature 5
+1. **Month-to-month contract (0.62).** By far the strongest feature. Month-to-month customers are pushed strongly toward churn, and a two-year contract (0.14) pushes away from it.
+2. **Tenure (0.35).** Short tenure raises the churn risk, long tenure lowers it.
+3. **No protection (0.28).** Internet customers with neither online security nor tech support are pushed toward churn.
+4. **Month-to-month fiber (0.24).** The combination of a month-to-month contract and fiber optic adds risk on top of the two separate effects.
+5. **Electronic check (0.15).** Paying by electronic check raises the risk, a smaller but consistent effect.
 
-**Consistency with the EDA.** `TODO` Which exploratory findings the model confirms, and where SHAP adds nuance.
+**Consistency with the EDA.** The model confirms the main exploratory findings: contract type, short tenure, missing tech support or security, fiber and electronic check. Gender is not among the top 15 features, as expected. SHAP adds some nuance:
+- Fiber optic alone has a small weight (0.04). Its effect goes mostly through `monthly_fiber`, so the risk comes from fiber customers who are also on a month-to-month contract.
+- Contract type matters about twice as much as any other feature.
+- `MonthlyCharges` has a mixed direction in the beeswarm plot, so a higher bill does not simply mean a higher churn risk.
+- Paperless billing shows a small positive effect.
 
-**Engineered features.** `TODO` Whether `monthly_fiber`, `no_protection`, `n_addons` or others rank among the top features, stated honestly either way.
+**Engineered features.** `no_protection` (rank 3) and `monthly_fiber` (rank 4) are in the top four, ahead of every raw charge or payment feature. `avg_monthly_spend` (rank 8) and `charge_gap` (rank 12) contribute less. `n_addons`, `tenure_group` and `is_autopay` are not in the top 15: their information is mostly carried by other features. The idea that more add-ons means a more attached customer is not confirmed: `n_addons` has a positive Logistic Regression coefficient, but it is strongly tied to the charge and service columns.
 
-**Individual explanations.** The waterfall plots in `results/` explain one high-risk and one low-risk customer: `TODO` one sentence on what drives each.
+**Individual explanations.** The waterfall plots explain one high-risk and one low-risk customer. SHAP values are in log-odds, and the average model output is close to 0.02.
 
-**Cross-check.** Logistic Regression coefficients ([`results/17_lr_coefficients.png`](results/17_lr_coefficients.png)) `TODO agree / partly agree` with the SHAP ranking.
+<table>
+<tr>
+<td align="center" width="50%"><b>High risk (predicted probability 0.94)</b><br><img src="results/15_shap_waterfall_high_risk.png" alt="Waterfall, high-risk customer"></td>
+<td align="center" width="50%"><b>Low risk (predicted probability 0.02)</b><br><img src="results/16_shap_waterfall_low_risk.png" alt="Waterfall, low-risk customer"></td>
+</tr>
+</table>
 
-> [!WARNING]
-> Some engineered features are exact combinations of others (`n_addons` is the sum of six service columns, and `charge_gap` is `MonthlyCharges` minus `avg_monthly_spend`), so their individual coefficients and SHAP values should be read together with the features they derive from.
+- **High-risk customer:** a very short tenure (+0.63), a month-to-month contract (+0.53), no protection (+0.33) and month-to-month fiber (+0.27) account for most of the risk. Electronic check and paperless billing add a little more.
+- **Low-risk customer:** not on a month-to-month contract (-0.87), a long tenure (-0.71), a two-year contract (-0.41) and having protection (-0.29) account for most of the low risk. A low average spend and no fiber also help.
+
+**Cross-check.** The Logistic Regression coefficients ([`results/17_lr_coefficients.png`](results/17_lr_coefficients.png)) partly agree with the SHAP ranking. Both models put the two-year contract (-1.17) and tenure (-1.07) on the low-risk side, and month-to-month (+0.44) and no protection (+0.34) on the high-risk side. The differences come from correlated features: the largest coefficients (`InternetService_No` -2.45, `InternetService_Fiber optic` +1.87, `n_addons` +0.92, `MonthlyCharges` -0.89, `avg_monthly_spend` -0.88) partly cancel each other, which SHAP does not show. Some engineered features are exact combinations of others (`n_addons` is the sum of six service columns, and `charge_gap` is `MonthlyCharges` minus `avg_monthly_spend`), so their individual coefficients and SHAP values should be read together with the features they derive from.
 
 ## Business recommendations
 
 | # | Action | Why |
 |:---:|---|---|
-| 1 | **Move month-to-month customers to longer contracts** with incentives | Contract type is among the strongest churn signals |
-| 2 | **Invest in the first-year experience** (onboarding, early check-ins) | Churn is concentrated in the first months |
-| 3 | **Bundle tech support and online security** for internet customers | They churn more without them |
-| 4 | **Encourage automatic payment** over electronic check | Electronic check is linked to higher churn |
-| 5 | **Review the fiber offer** (price and quality) | Fiber is associated with higher churn |
+| 1 | **Move month-to-month customers to longer contracts** with incentives | Contract type is the strongest SHAP feature (0.62) |
+| 2 | **Invest in the first-year experience** (onboarding, early check-ins) | Short tenure is the second strongest feature (0.35) |
+| 3 | **Bundle tech support and online security** for internet customers | `no_protection` is the third strongest feature (0.28) |
+| 4 | **Target month-to-month fiber customers** and review the fiber offer (price and quality) | `monthly_fiber` is the fourth strongest feature (0.24); fiber alone has little effect |
+| 5 | **Steer customers away from electronic check** toward other payment methods | Electronic check has a smaller but consistent effect (0.15) |
 | 6 | **Use the model as a ranking tool** | Contact customers from the highest predicted risk downward until the retention budget is used |
 
 > [!CAUTION]
@@ -298,8 +309,13 @@ Run the notebook from top to bottom. Figures and tables are written to `results/
 
 ```python
 import joblib
+import pandas as pd
+from src.preprocessing import clean_data, add_features
+
 model = joblib.load("results/model_xgboost.joblib")
-model.predict_proba(new_customers)[:, 1]   # new_customers must go through add_features first
+new_raw = pd.read_csv("new_customers.csv")        # same columns as the original dataset
+X_new = add_features(clean_data(new_raw))
+churn_risk = model.predict_proba(X_new)[:, 1]
 ```
 
 ---
